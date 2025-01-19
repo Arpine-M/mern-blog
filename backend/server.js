@@ -48,4 +48,57 @@ app.get('/api/v1/posts', async (req, res) => {
     }
 })
 
+app.put('/api/v1/posts/:postId', async (req, res) => {
+        try {
+            const postId = req.params.postId;
+            const postFound = await Post.findById(postId);
+            if(!postFound){
+                throw new Error("Post not found");
+        }
+        const postUpdated = await Post.findByIdAndUpdate(postId, {title: req.body.title, description: req.body.description}, 
+            {new: true}
+        );
+        res.json({
+            
+            status: "Post updated successfully",
+            postUpdated,
+        });
+    }
+        catch (error) {
+            throw new Error(error);  
+        }
+    })
+
+app.get('/api/v1/posts/:postId', async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const postFound = await Post.findById(postId);
+        res.json({
+            status: "success",
+            message: "Post fetched successfully",
+            postFound,
+        });
+
+    } catch (error) {
+        throw new Error(error);
+        
+    }
+})
+
+app.delete('/api/v1/posts/:postId', async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const postFound = await Post.findByIdAndDelete(postId);
+        res.json({
+            status: "success",
+            message: "Post deleted successfully",
+            
+        });
+
+    } catch (error) {
+        throw new Error(error);
+        
+    }
+})
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

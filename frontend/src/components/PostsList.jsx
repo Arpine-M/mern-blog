@@ -4,12 +4,25 @@ import {fetchAllPosts} from '../APIServices/posts/postsAPI'
 
 const PostsList = () => {
     
-    const {isError, isLoading, data, error, isSuccess} =useQuery({
+    const {isError, isLoading, data, error, isSuccess, refetch} =useQuery({
         queryKey: ['lists-posts'],
         queryFn: fetchAllPosts
     });
 
+    const postMutation = useMutation({
+        mutationKey: ["delete-post"],
+        mutationFn: deletePostAPI,
+      });
+
+      const deleteHandler = async (postId) => {
+        postMutation
+          .mutateAsync(postId)
+          .then(() => {
+            refetch();
+          })
+          .catch((e) => console.log(e));
     
+      };
   
     return (
     <div>
@@ -18,9 +31,12 @@ const PostsList = () => {
         {error && <p>{error.message}</p>}
     {data?.posts.map((post) => {
         return(
-            <div>
+            <div key={post._id}>
                 <h1>{post?.title}</h1>
                 <p>{post?.description}</p>
+                <Link to={`/posts/${post._id}`}>
+                    <button>Edit</button>
+                </Link>
             </div>
         )
     })}

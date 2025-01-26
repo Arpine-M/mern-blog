@@ -1,7 +1,9 @@
 import React from 'react'
 import { useQuery } from '@tanstack/react-query';
-import {fetchAllPosts} from '../APIServices/posts/postsAPI'
-
+import {fetchAllPosts} from '../APIServices/posts/postsAPI';
+import { useMutation } from '@tanstack/react-query';
+import { deletePostAPI } from '../APIServices/posts/postsAPI';
+import { Link } from 'react-router-dom';
 const PostsList = () => {
     
     const {isError, isLoading, data, error, isSuccess, refetch} =useQuery({
@@ -32,11 +34,14 @@ const PostsList = () => {
     {data?.posts.map((post) => {
         return(
             <div key={post._id}>
-                <h1>{post?.title}</h1>
-                <p>{post?.description}</p>
+                
+                <div 
+                 dangerouslySetInnerHTML={{__html: post?.description}}
+                />
                 <Link to={`/posts/${post._id}`}>
                     <button>Edit</button>
                 </Link>
+                <button onClick={() => deleteHandler(post._id)}>Delete</button>
             </div>
         )
     })}

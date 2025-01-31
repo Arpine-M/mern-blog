@@ -5,10 +5,15 @@ import * as Yup from "yup";
 import ReactQuill from "react-quill";
 import { useMutation } from "@tanstack/react-query";
 import { createPostAPI } from "../../APIServices/posts/postsAPI";
+import { FaTimesCircle } from "react-icons/fa";
+import AlertMessage from "../Alert/AlertMessage";
 
 const CreatePost = () => {
   // state for wysiwg
   const [description, setDescription] = useState("");
+
+  const [imageError, setImageError] = useState("");
+  const [imagePreview, setImagePreview] = useState(null);
   // post mutation
   const postMutation = useMutation({
     mutationKey: ["create-post"],
@@ -18,19 +23,45 @@ const CreatePost = () => {
     // initial data
     initialValues: {
       description: "",
+      image:""
     },
     // validation
     validationSchema: Yup.object({
       description: Yup.string().required("Description is required"),
+      image: Yup.string().required("Image is required"),
+
     }),
     // submit
     onSubmit: (values) => {
-      const postData = {
-        description: values.description,
-      };
-      postMutation.mutate(postData);
+      const formData = new FormData();
+      formData.append("description", values.description);
+      formData.append("image", values.image);
+      postMutation.mutate(formData);
     },
   });
+
+  const handleFileChange = (e) => {
+    const file = e.currentTarget.files[0];
+
+    if(file.size > 1048576) {
+      setImageError("Image size must be less than 1MB");
+      return;
+    }
+
+    if(file.type !== "image/jpeg" && file.type !== "image/png" && file.type !== "image/jpg") {
+      setImageError("Image must be in JPEG, PNG, or JPG format");
+      
+    }
+
+    formik.setFieldValue("image", file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const removeImage = () => {
+    formik.setFieldValue("image", null);
+    setImagePreview(null);
+  };
+
   //get loading state
   const isLoading = postMutation.isPending;
   //isErr
@@ -38,9 +69,10 @@ const CreatePost = () => {
   //success
   const isSuccess = postMutation.isSuccess;
   //Error
-  const error = postMutation.error;
   const errorMsg = postMutation?.error?.response?.data?.message;
-  console.log(errorMsg);
+  
+  if(isError) return <AlertMessage type="error" message={errorMsg} />;
+
   return (
     <div className="flex items-center justify-center">
       <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8 m-4">
@@ -48,10 +80,17 @@ const CreatePost = () => {
           Add New Post
         </h2>
         {/* show alert */}
+        {isLoading &&(
+          <AlertMessage type="loading" message="Loading..." />
+        )};
+        {isSuccess &&(
+          <AlertMessage type="success" message="Post created successfully" />
+        )};
+
 
         <form onSubmit={formik.handleSubmit} className="space-y-6">
           {/* Description Input - Using ReactQuill for rich text editing */}
-          <div>
+          <div className="mb-10">
             <label
               htmlFor="description"
               className="block text-sm font-medium text-gray-700"
@@ -64,6 +103,7 @@ const CreatePost = () => {
                 setDescription(value);
                 formik.setFieldValue("description", value);
               }}
+              className="h-40"
             />
             {/* display err msg */}
             {formik.touched.description && formik.errors.description && (
@@ -99,7 +139,7 @@ const CreatePost = () => {
                 type="file"
                 name="image"
                 accept="image/*"
-                // onChange={handleFileChange}
+                onChange={handleFileChange}
                 className="hidden"
               />
               <label
@@ -110,16 +150,16 @@ const CreatePost = () => {
               </label>
             </div>
             {/* Display error message */}
-            {/* {formik.touched.image && formik.errors.image && (
+            {formik.touched.image && formik.errors.image && (
               <p className="text-sm text-red-600">{formik.errors.image}</p>
-            )} */}
+            )}
 
             {/* error message */}
-            {/* {imageError && <p className="text-sm text-red-600">{imageError}</p>} */}
+            {imageError && <p className="text-sm text-red-600">{imageError}</p>}
 
             {/* Preview image */}
 
-            {/* {imagePreview && (
+            {imagePreview && (
               <div className="mt-2 relative">
                 <img
                   src={imagePreview}
@@ -133,7 +173,7 @@ const CreatePost = () => {
                   <FaTimesCircle className="text-red-500" />
                 </button>
               </div>
-            )} */}
+            )}
           </div>
 
           {/* Submit Button - Button to submit the form */}

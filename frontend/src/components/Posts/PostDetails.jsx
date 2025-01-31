@@ -26,7 +26,8 @@ const PostDetails = () => {
     <div className="container mx-auto p-4">
       <div className="bg-white rounded-lg shadow-lg p-5">
         <img
-          src="https://cdn.pixabay.com/photo/2023/12/19/15/51/flowers-8457960_1280.jpg"
+          src={data?.postFound?.image?.path}
+          alt={data?.postFound?.description}
           // alt={postData?._id}
           className="w-full h-full object-cover rounded-lg mb-4"
         />

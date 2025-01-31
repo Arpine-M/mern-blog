@@ -7,7 +7,7 @@ const postController = {
     
         const {description} = req.body;
         
-        const postCreated = await Post.create({description});
+        const postCreated = await Post.create({description, image: req.file});
         res.json({
             status: "success",
             message: "Post created successfully",

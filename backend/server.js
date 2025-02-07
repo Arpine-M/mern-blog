@@ -5,6 +5,7 @@ const connectDB = require("./utils/connectDB");
 const postRouter = require("./router/post/postsRouter");
 const usersRouter = require("./router/user/usersRouter");
 const passport = require("./utils/passport-config");
+const cookie = require('cookie-parser')
 
 connectDB();
 const app = express();
@@ -20,6 +21,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(passport.initialize());
+app.use(cookie())
 
 app.use('/api/v1', postRouter);
 app.use('/api/v1/users', usersRouter);

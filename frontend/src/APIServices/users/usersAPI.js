@@ -17,7 +17,7 @@ export const registerAPI = async (userData) => {
     return response.data;
   };
   // ! login user
-  export const loginAPI = async (userData) => {
+export const loginAPI = async (userData) => {
     const response = await axios.post(
       `${BASE_URL}/users/login`,
       {
@@ -31,3 +31,30 @@ export const registerAPI = async (userData) => {
   
     return response.data;
   };
+
+  export const checkAuthStatusAPI = async () => {
+    const response = await axios.get(
+      `${BASE_URL}/users/checkAuthenticated`,
+      
+      {
+        withCredentials: true,
+      }
+    );
+  
+    return response.data;
+  };
+
+  export const logoutAPI = async (userData) => {
+    const response = await axios.post(
+      `${BASE_URL}/users/logout`,
+      {
+        
+      },
+      {
+        withCredentials: true,
+      }
+    );
+  
+    return response.data;
+  };
+

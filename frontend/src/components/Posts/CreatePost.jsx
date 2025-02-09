@@ -71,7 +71,6 @@ const CreatePost = () => {
   //Error
   const errorMsg = postMutation?.error?.response?.data?.message;
   
-  if(isError) return <AlertMessage type="error" message={errorMsg} />;
 
   return (
     <div className="flex items-center justify-center">
@@ -85,6 +84,10 @@ const CreatePost = () => {
         )};
         {isSuccess &&(
           <AlertMessage type="success" message="Post created successfully" />
+        )};
+        {isError &&(<AlertMessage type="error" message={errorMsg} />
+
+          
         )};
 
 

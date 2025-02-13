@@ -4,6 +4,7 @@ import {checkAuthStatusAPI} from '../../APIServices/users/usersAPI.js';
 import {useDispatch} from 'react-redux';
 import {isAuthenticated} from '../../redux/slices/authSlices.js';
 import { use } from 'react';
+import { useEffect } from 'react';
 
 const Profile = () => {
   const {isError, isLoading, data, error, isSuccess, refetch} = useQuery({

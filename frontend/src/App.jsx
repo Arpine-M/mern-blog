@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-
+import AddCategory from "./components/Category/AddCategory";
 import CreatePost from "./components/Posts/CreatePost";
 import PublicNavbar from "./components/Navbar/PublicNavbar";
 import { Link } from "react-router-dom";
@@ -35,25 +35,56 @@ function App() {
   return (
     <BrowserRouter>
 
-      {userAuth?<PrivateNavbar/>:<PublicNavbar/>}
+{userAuth ? <PrivateNavbar /> : <PublicNavbar />}
       <Routes>
+        {/* create post */}
         <Route element={<Home />} path="/" />
-        <Route element={<UserDashboard />} path="/dashboard" >
-          <Route element={<AuthRoute><CreatePost /></AuthRoute>} path="create-post" />
-          <Route element={<AuthRoute><AccountSummaryDashboard /></AuthRoute>} path="" />
-
+        {/* User dashboard */}
+        <Route element={<UserDashboard/>} path="/dashboard">
+          {/* Account summary  */}
+          <Route
+            element={
+              <AuthRoute>
+                <AccountSummaryDashboard />
+              </AuthRoute>
+            }
+            path=""
+          />
+          {/* Create posts */}
+          <Route
+            element={
+              <AuthRoute>
+                <CreatePost />
+              </AuthRoute>
+            }
+            path="create-post"
+          />
+          {/* Create category */}
+          <Route
+            element={
+              <AuthRoute>
+                <AddCategory />
+              </AuthRoute>
+            }
+            path="add-category"
+          />
         </Route>
+
         <Route element={<PostsList />} path="/posts" />
         <Route element={<PostDetails />} path="/posts/:postId" />
         <Route element={<Login />} path="/login" />
-        <Route element={<Register/>} path="/register" />
-        <Route element={<AuthRoute><Profile/></AuthRoute> } path="/profile" />
-
-
-
-        <Route element={<UpdatePost />} path="/posts/:postId" />
-
-
+        <Route element={<Register />} path="/register" />
+        <Route
+          element={
+            <AuthRoute>
+              <Profile />
+            </AuthRoute>
+          }
+          path="/profile"
+        />
+        {/* <Route element={<UpdatePost />} path="/posts/:postId" /> */}
+        {/* <CreatePost />
+        <PostsList /> */}
       </Routes>
     </BrowserRouter>
   );

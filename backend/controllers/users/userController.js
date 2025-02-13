@@ -58,58 +58,66 @@ const userController = {
       });
     })(req, res, next);
   }),
-  googleAuth: passport.authenticate("google", {scope:['profile']}),
-  googleAuthCallback: asyncHandler(async(req, res, next)=>{
-    passport.authenticate("google", 
-      {failureRedirect: "/login",
-      session: false,
+  // ! googleAuth-->
+  googleAuth: passport.authenticate("google", { scope: ["profile"] }),
+  // ! GoogleAuthCallback
+  googleAuthCallback: asyncHandler(async (req, res, next) => {
+    passport.authenticate(
+      "google",
+      {
+        failureRedirect: "/login",
+        session: false,
       },
-      (err, user, info)=>{
+      (err, user, info) => {
         if (err) return next(err);
         if (!user) {
           return res.redirect("http://localhost:5173/google-login-error");
         }
+        //generate the token
+
         const token = jwt.sign({ id: user?._id }, process.env.JWT_SECRET, {
           expiresIn: "3d",
         });
+        //set the token into the cooke
         res.cookie("token", token, {
           httpOnly: true,
           secure: false,
           sameSite: "strict",
-          maxAge: 24 * 60 * 60 * 1000,
+          maxAge: 24 * 60 * 60 * 1000, //1 day:
         });
+        //redirect the user dashboard
         res.redirect("http://localhost:5173/dashboard");
-      })(req, res, next);
-      
- }),
-
- checkAuthenticated:asyncHandler(async (req, res, next) => {
-  const token = req.cookies["token"];
-  if(!token){
-    return res.json({isAuthenticated: false})
-  }
-  try{
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
-    if(!user){
-      return res.json({isAuthenticated: false})
-    } else{
-    return res.status(200).json({
-      isAuthenticated: true, 
-      _id: user?._id,
-      username: user?.username,
-      profilePicture: user?.profilePicture
-    });
-  }
-  } catch (error) {}
-    return res.status(401).json({isAuthenticated: false, error})
-
- }),
-
- logout: asyncHandler(async (req, res) => {
-  res.cookie("token", "", { maxAge: 1 });
-  res.status(200).json({message: "Logout Success"});
- }),
+      }
+    )(req, res, next);
+  }),
+  // ! check user authentication status
+  checkAuthenticated: asyncHandler(async (req, res) => {
+    const token = req.cookies["token"];
+    if (!token) {
+      return res.status(401).json({ isAuthenticated: false });
+    }
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      //find the user
+      const user = await User.findById(decoded.id);
+      if (!user) {
+        return res.status(401).json({ isAuthenticated: false });
+      } else {
+        return res.status(200).json({
+          isAuthenticated: true,
+          _id: user?._id,
+          username: user?.username,
+          profilePicture: user?.profilePicture,
+        });
+      }
+    } catch (error) {}
+    return res.status(401).json({ isAuthenticated: false, error });
+  }),
+  // ! Logout
+  logout: asyncHandler(async (req, res) => {
+    res.cookie("token", "", { maxAge: 1 });
+    res.status(200).json({ message: "Logout success" });
+  }),
 };
 
 module.exports = userController;

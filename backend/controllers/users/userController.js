@@ -118,6 +118,11 @@ const userController = {
     res.cookie("token", "", { maxAge: 1 });
     res.status(200).json({ message: "Logout success" });
   }),
+
+  profile: asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user).populate("posts").select("-password -passwordResetToken -passwordResetExpires -accountVerificationToken -accountVerificationExpires");
+    res.json({user});
+  }),
 };
 
 module.exports = userController;

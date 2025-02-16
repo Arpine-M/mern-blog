@@ -44,6 +44,18 @@ export const loginAPI = async (userData) => {
     return response.data;
   };
 
+  export const userProfileAPI = async () => {
+    const response = await axios.get(
+      `${BASE_URL}/users/profile`,
+      
+      {
+        withCredentials: true,
+      }
+    );
+  
+    return response.data;
+  };
+
   export const logoutAPI = async (userData) => {
     const response = await axios.post(
       `${BASE_URL}/users/logout`,

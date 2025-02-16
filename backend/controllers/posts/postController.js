@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Post = require("../../models/Post/Post");
 const Category = require("../../models/Category/Category");
+const User = require("../../models/User/User");
 
 const postController = {
   //!Create post
@@ -12,6 +13,11 @@ const postController = {
     if (!categoryFound) {
       throw new Error("Category not found");
     }
+    // find the user
+    const userFound = await User.findById(req.user);
+    if (!userFound) {
+      throw new Error("User not found");
+    }
     const postCreated = await Post.create({
       description,
       image: req.file,
@@ -22,6 +28,9 @@ const postController = {
     categoryFound.posts.push(categoryFound?._id);
     //resave the category
     await categoryFound.save();
+
+    userFound.posts.push(postCreated?._id);
+    await userFound.save();
     res.json({
       status: "success",
       message: "Post created successfully",

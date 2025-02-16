@@ -7,6 +7,7 @@ const usersRouter = require("./router/user/usersRouter");
 const passport = require("./utils/passport-config");
 const cookie = require('cookie-parser')
 const categoriesRouter = require("./router/category/categoriesRouter");
+const planRouter = require("./router/plan/planRouter");
 
 connectDB();
 const app = express();
@@ -27,6 +28,7 @@ app.use(cookie())
 app.use('/api/v1', postRouter);
 app.use('/api/v1/users', usersRouter);
 app.use("/api/v1/categories", categoriesRouter);
+app.use("/api/v1/plans", planRouter);
 
 app.use((req, res, next) => {    
     res.status(404).json({

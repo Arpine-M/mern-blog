@@ -8,6 +8,7 @@ const passport = require("./utils/passport-config");
 const cookie = require('cookie-parser')
 const categoriesRouter = require("./router/category/categoriesRouter");
 const planRouter = require("./router/plan/planRouter");
+const stripePaymentRouter = require("./router/stripePayment/stripePaymentRouter");
 
 connectDB();
 const app = express();
@@ -29,6 +30,9 @@ app.use('/api/v1', postRouter);
 app.use('/api/v1/users', usersRouter);
 app.use("/api/v1/categories", categoriesRouter);
 app.use("/api/v1/plans", planRouter);
+app.use("/api/v1/stripe", stripePaymentRouter);
+
+
 
 app.use((req, res, next) => {    
     res.status(404).json({

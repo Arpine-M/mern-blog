@@ -19,6 +19,8 @@ import { isAuthenticated } from "./redux/slices/authSlices";
 import AuthRoute from "./components/AuthRoute/AuthRoute";
 import UserDashboard from "./components/User/UserDashboard";
 import AccountSummaryDashboard from "./components/User/AccountSummary";
+import CreatePlan from "./components/Plans/CreatePlan";
+import Pricing from "./components/Plans/Pricing";
 
 function App() {
   const {isError, isLoading, data, error, isSuccess, refetch} = useQuery({
@@ -59,6 +61,15 @@ function App() {
             }
             path="create-post"
           />
+             {/* Create plan */}
+          <Route
+            element={
+              <AuthRoute>
+                <CreatePlan />
+              </AuthRoute>
+            }
+            path="create-plan"
+          />
           {/* Create category */}
           <Route
             element={
@@ -74,6 +85,8 @@ function App() {
         <Route element={<PostDetails />} path="/posts/:postId" />
         <Route element={<Login />} path="/login" />
         <Route element={<Register />} path="/register" />
+        <Route element={<Pricing />} path="/pricing" />
+
         <Route
           element={
             <AuthRoute>

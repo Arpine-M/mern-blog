@@ -10,6 +10,7 @@ import {
 import { Link } from "react-router-dom";
 import { userProfileAPI } from "../../APIServices/users/usersAPI";
 import { use } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 const AccountSummaryDashboard = ({}) => {
   const {data, isLoading, isError, error} = useQuery({

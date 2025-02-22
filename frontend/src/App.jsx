@@ -21,6 +21,8 @@ import UserDashboard from "./components/User/UserDashboard";
 import AccountSummaryDashboard from "./components/User/AccountSummary";
 import CreatePlan from "./components/Plans/CreatePlan";
 import Pricing from "./components/Plans/Pricing";
+import CheckoutForm from "./components/Plans/checkoutForm";
+import PaymentSuccess from "./components/Plans/PaymentSuccess";
 
 function App() {
   const {isError, isLoading, data, error, isSuccess, refetch} = useQuery({
@@ -86,6 +88,8 @@ function App() {
         <Route element={<Login />} path="/login" />
         <Route element={<Register />} path="/register" />
         <Route element={<Pricing />} path="/pricing" />
+        <Route element={<Pricing />} path="/pricing" />
+        <Route element={<CheckoutForm />} path="/checkout/:planId" />
 
         <Route
           element={
@@ -94,6 +98,14 @@ function App() {
             </AuthRoute>
           }
           path="/profile"
+        />
+         <Route
+          element={
+            <AuthRoute>
+              <PaymentSuccess />
+            </AuthRoute>
+          }
+          path="/success"
         />
         {/* <Route element={<UpdatePost />} path="/posts/:postId" /> */}
         {/* <CreatePost />

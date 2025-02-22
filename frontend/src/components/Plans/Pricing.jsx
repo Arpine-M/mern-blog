@@ -23,9 +23,9 @@ const Pricing = () => {
           {/* Free Plan */}
           <div className="w-full lg:w-1/2 p-4">
             <div className="border border-gray-200 rounded-3xl px-8 lg:px-10 pb-14 pt-10 h-full">
-              <h2 className="text-3xl font-bold font-heading mb-6">{freePlan[0]?.planName}</h2>
+              <h2 className="text-3xl font-bold font-heading mb-6">{freePlan?.[0]?.planName}</h2>
               <div className="flex items-center gap-4 flex-wrap mb-6">
-                <h2 className="text-6xl font-bold font-heading">${freePlan[0].price}</h2>
+                <h2 className="text-6xl font-bold font-heading">${freePlan?.[0]?.price}</h2>
                 <p className="text-xl font-medium">per month</p>
               </div>
 
@@ -81,7 +81,7 @@ const Pricing = () => {
               </div>
               <Link
                 className="w-full text-center h-14 py-4 px-6 rounded-full bg-white border border-gray-200 shadow hover:bg-gray-50 focus:ring focus:ring-orange-200 transition duration-200 mb-8 flex items-center justify-center gap-2"
-                to="/premium-subscription"
+                to={`/checkout/${premiumPlan?.[0]?._id}`}
               >
                 <span className="text-sm font-semibold ">Sign up today</span>
                 <svg

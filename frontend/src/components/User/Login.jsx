@@ -33,7 +33,7 @@ const Login = () => {
         .mutateAsync(values)
         .then(() => {
           // redirect
-          navigate("/profile");
+          navigate("/dashboard");
         })
         .catch((err) => console.log(err));
     },
@@ -159,7 +159,12 @@ const Login = () => {
               <span className="font-bold font-heading">
                 Sign in with Google
               </span>
+              
             </a>
+            {/* forgot password link */}
+            <Link className="mt-10 text-indigo-500" to="/forgot-password">Forgot Password?</Link>
+              
+            
           </form>
         </div>
       </div>

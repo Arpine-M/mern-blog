@@ -10,5 +10,10 @@ usersRouter.get("/auth/google/callback", userController.googleAuthCallback);
 usersRouter.get("/checkAuthenticated", userController.checkAuthenticated);
 usersRouter.post("/logout", userController.logout);
 usersRouter.get("/profile", isAuthenticated, userController.profile);
+usersRouter.put("/unfollow/:unfollowId", isAuthenticated, userController.unFollowUser);
+usersRouter.put("/account-verification-email", isAuthenticated, userController.verifyEmailAccount);
+usersRouter.put("/verify-account/:verifyToken", isAuthenticated, userController.verifyEmailAcc);
+usersRouter.post("/forgot-password", userController.forgotPassword);
+usersRouter.post("/reset-password/:verifyToken", userController.resetPassword);
 
 module.exports = usersRouter;

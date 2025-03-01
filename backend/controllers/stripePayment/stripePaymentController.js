@@ -78,6 +78,24 @@ const stripePaymentController = {
                 userFound
             });
         }    
+   }),
+
+   free: asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user);
+
+    if(!user){
+        throw new Error("User not found");
+
+    } 
+    user.hasSelectedPlan = true;
+    await user.save();
+
+    res.json({
+        status: true,
+        message: "Payment verified successfully",
+        
+    })
+
    })
 }
 

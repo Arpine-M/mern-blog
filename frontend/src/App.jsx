@@ -23,7 +23,10 @@ import CreatePlan from "./components/Plans/CreatePlan";
 import Pricing from "./components/Plans/Pricing";
 import CheckoutForm from "./components/Plans/checkoutForm";
 import PaymentSuccess from "./components/Plans/PaymentSuccess";
-
+import PayingFreePlan from "./components/Plans/PayingFreePlan";
+import AccountVerifiedComponent from "./components/User/AccountVerification";
+import RequestResetPassword from "./components/User/RequestResetPassword";
+import ResetPassword from "./components/User/ResetPassword";
 function App() {
   const {isError, isLoading, data, error, isSuccess, refetch} = useQuery({
     queryKey:["user-auth"],
@@ -63,6 +66,15 @@ function App() {
             }
             path="create-post"
           />
+          {/* Verify account */}
+          <Route
+            element={
+              <AuthRoute>
+                <AccountVerifiedComponent />
+              </AuthRoute>
+            }
+            path="account-verification/:verifyToken"
+          />
              {/* Create plan */}
           <Route
             element={
@@ -90,6 +102,9 @@ function App() {
         <Route element={<Pricing />} path="/pricing" />
         <Route element={<Pricing />} path="/pricing" />
         <Route element={<CheckoutForm />} path="/checkout/:planId" />
+        <Route element={<RequestResetPassword />} path="/forgot-password" />
+        <Route element={<ResetPassword />} path="/reset-password/:verifyToken" />
+
 
         <Route
           element={
@@ -106,6 +121,14 @@ function App() {
             </AuthRoute>
           }
           path="/success"
+        />
+          <Route
+          element={
+            <AuthRoute>
+              <PayingFreePlan />
+            </AuthRoute>
+          }
+          path="/free-subscription"
         />
         {/* <Route element={<UpdatePost />} path="/posts/:postId" /> */}
         {/* <CreatePost />

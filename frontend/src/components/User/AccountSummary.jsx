@@ -8,9 +8,10 @@ import {
   FaFlag,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { userProfileAPI } from "../../APIServices/users/usersAPI";
+import { sendEmailVerificationTokenAPI, userProfileAPI } from "../../APIServices/users/usersAPI";
 import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
+import AlertMessage from "../Alert/AlertMessage"
 
 const AccountSummaryDashboard = ({}) => {
   const {data, isLoading, isError, error} = useQuery({
@@ -111,6 +112,16 @@ const AccountSummaryDashboard = ({}) => {
     },
   ];
 
+  const verificationTokenMutation = useMutation({
+    mutationKey: ['send-verification-token'],
+    mutationFn: sendEmailVerificationTokenAPI
+  });
+
+  const handleSendVerificationEmail = async()=>{
+    verificationTokenMutation.mutate();
+
+  }
+
   return (
     <div className="p-4">
       <p
@@ -121,18 +132,18 @@ const AccountSummaryDashboard = ({}) => {
         Welcome Back: {data?.user?.username}
       </p>
       {/* display account verification status */}
-      {/* {mutation.isPending ? (
-        <AlertMessage type="loading" message="Loading..." />
-      ) : mutation.isError ? (
+      {verificationTokenMutation.isPending ? (
+        <AlertMessage type="loading" message="Email sending Loading..." />
+      ) : verificationTokenMutation.isError ? (
         <AlertMessage
           type="error"
           message={
-            mutation?.error?.message || mutation?.error?.response?.data?.message
+            verificationTokenMutation?.error?.message || verificationTokenMutation?.error?.response?.data?.message
           }
         />
-      ) : mutation.isSuccess ? (
-        <AlertMessage type="success" message={mutation?.data?.message} />
-      ) : null} */}
+      ) : verificationTokenMutation.isSuccess ? (
+        <AlertMessage type="success" message={verificationTokenMutation?.data?.message} />
+      ) : null}
       {!hasPlan && (
         <div
           className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4"
@@ -157,7 +168,7 @@ const AccountSummaryDashboard = ({}) => {
           <p>
             Your account is not verified. Please{" "}
             <button
-              // onClick={handleSendVerificationEmail}
+              onClick={handleSendVerificationEmail}
               className="underline text-red-800"
             >
               verify your account

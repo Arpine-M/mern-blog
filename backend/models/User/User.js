@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const crypto = require("crypto");
 const userSchema = new mongoose.Schema(
   {
     // Basic user information
@@ -78,6 +79,24 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+userSchema.methods.generateAccVerificationToken = function () {
+ 
+  const emailToken = crypto.randomBytes(20).toString("hex");
+  this.accountVerificationToken = crypto.createHash("sha256").update(emailToken).digest("hex");
+
+  this.accountVerificationExpires = Date.now() + 10 * 60 * 1000;
+  return emailToken;
+};
+
+userSchema.methods.generatePasswordResetToken = function () {
+ 
+  const emailToken = crypto.randomBytes(20).toString("hex");
+  this.accountVerificationToken = crypto.createHash("sha256").update(emailToken).digest("hex");
+
+  this.passwordResetToken = Date.now() + 10 * 60 * 1000;
+  return emailToken;
+};
 
 const User = mongoose.model("User", userSchema);
 

@@ -3,7 +3,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
 const User = require("../../models/User/User");
-
+const sendAccVerificationEmail = require("../../utils/sendAccVerificationEmail");
+const crypto = require("crypto");
 //-----User Controller---
 
 const userController = {
@@ -123,6 +124,150 @@ const userController = {
     const user = await User.findById(req.user).populate("posts").select("-password -passwordResetToken -passwordResetExpires -accountVerificationToken -accountVerificationExpires");
     res.json({user});
   }),
+
+  followUser: asyncHandler(async (req, res) => {
+    
+    const userId = req.user;
+    const followId = req.params.followId;
+
+    await User.findByIdAndUpdate(
+      userId,
+       { 
+        $addToSet: { following: followId },
+       },
+       { new: true }
+    );
+
+    await User.findByIdAndUpdate(
+      followId,
+       { 
+        $addToSet: { followers: userId },
+       },
+       { new: true }
+    );
+
+    res.json({ 
+      message: "User followed"
+
+     }) 
+    
+  }),
+
+  unFollowUser: asyncHandler(async (req, res) => {
+    
+    const userId = req.user;
+    const unfollowId = req.params.unfollowId;
+
+    const user = await User.findById(userId);
+    const unfollowUser = await User.findById(unfollowId);
+
+    if(!user || !unfollowUser){
+      throw new Error("User not found");
+    }
+   
+    user.following.pull(unfollowId);
+    unfollowUser.followers.pull(userId);
+
+    await user.save();
+    await unfollowUser.save();
+
+    res.json({ 
+      message: "User unfollowed"
+
+    });
+    
+  }),
+
+  verifyEmailAccount: asyncHandler(async (req, res) => {
+
+    const user = await User.findById(req.user);
+    if(!user){
+      throw new Error("User not found");
+    }
+
+    if(!user?.email){
+        throw new Error("Email not found");
+    }
+
+    const token = await user.generateAccVerificationToken();
+    await user.save();
+
+    sendAccVerificationEmail(user?.email, token);
+    res.json({
+      
+      message: `Account verification email sent to your email.Token expires in 10 minutes`
+    })
+
+  }),
+  verifyEmailAcc: asyncHandler(async (req, res)=>{
+    
+    const {verifyToken} = req.params
+    const cryptoToken = crypto.createHash("sha256").update(verifyToken).digest("hex");
+
+    const userFound = await User.findOne({
+      accountVerificationToken: cryptoToken,
+      accountVerificationExpires: { $gt: Date.now() }
+    });
+    if(!userFound){
+      throw new Error("Account verification expired");
+    }
+
+    userFound.isEmailVerified = true;
+    userFound.accountVerificationToken = null;
+    userFound.accountVerificationExpires = null;
+    res.json({
+      message: "Account successfully verified",
+      
+    })
+  }),
+
+  forgotPassword: asyncHandler(async (req, res) => {
+
+    const {email} = req.body;
+    const user = await User.findOne({email});
+    if(!user){
+      throw new Error(`User with email ${email} not found`);
+    }
+
+   if(user.authMethod !== "local"){
+    throw new Error("Please login with your social account");
+   }
+    const token = await user.generatePasswordResetToken();
+    await user.save();
+
+    sendPasswordEmail(user?.email, token);
+    res.json({
+      
+      message: `Password reset email sent to your ${email}`,
+    });
+
+  }),
+
+  resetPassword: asyncHandler(async (req, res)=>{
+    
+    const {verifyToken} = req.params;
+    const {password} = req.body;
+
+    const cryptoToken = crypto.createHash("sha256").update(verifyToken).digest("hex");
+
+    const userFound = await User.findOne({
+      passwordResetToken: cryptoToken,
+      passwordResetExpires: { $gt: Date.now() }
+    });
+    if(!userFound){
+      throw new Error("Password reset token expired");
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    userFound.password = await bcrypt.hash(password, salt);
+    userFound.passwordResetToken = null;
+    userFound.passwordResetExpires = null;
+    res.json({
+      message: "Password successfully reset",
+    
+    })
+  }),
+
 };
 
 module.exports = userController;

@@ -70,3 +70,102 @@ export const loginAPI = async (userData) => {
     return response.data;
   };
 
+  export const followUserAPI = async (userId) => {
+    const response = await axios.put(
+      `${BASE_URL}/users/follow/${userId}`,
+      {},
+      {
+        username: userData?.username,
+        password: userData?.password,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+  
+    return response.data;
+  };
+
+
+  export const unfollowUserAPI = async (userId) => {
+    const response = await axios.put(
+      `${BASE_URL}/users/unfollow/${userId}`,
+      {},
+      {
+        username: userData?.username,
+        password: userData?.password,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+  
+    return response.data;
+  };
+
+  export const sendEmailVerificationTokenAPI = async () => {
+    const response = await axios.put(
+      `${BASE_URL}/users/account-verification-email`,
+      {},
+      {
+        username: userData?.username,
+        password: userData?.password,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+  
+    return response.data;
+  };
+
+  export const verifyUserAccountAPI = async (verifyToken) => {
+    const response = await axios.put(
+      `${BASE_URL}/users/verify-account/${verifyToken}`,
+      {},
+      {
+        username: userData?.username,
+        password: userData?.password,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+  
+    return response.data;
+  };
+
+
+  export const forgotPasswordAPI = async (email) => {
+    const response = await axios.post(
+      `${BASE_URL}/users/forgot-password/`,
+      {
+        email,
+      },
+     
+      {
+        withCredentials: true,
+      }
+    );
+  
+    return response.data;
+  };
+
+  export const resetPasswordAPI = async (data) => {
+    const response = await axios.post(
+      `${BASE_URL}/users/reset-password/${data?.verifyToken}`,
+      
+      {
+        
+        password: data?.password,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+  
+    return response.data;
+  };
+
+
+

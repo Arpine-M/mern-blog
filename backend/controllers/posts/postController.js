@@ -4,16 +4,14 @@ const Category = require("../../models/Category/Category");
 const User = require("../../models/User/User");
 
 const postController = {
-  //!Create post
+  
   createPost: asyncHandler(async (req, res) => {
-    //get the payload
+    
     const { description, category } = req.body;
-    // find the category
     const categoryFound = await Category.findById(category);
     if (!categoryFound) {
       throw new Error("Category not found");
     }
-    // find the user
     const userFound = await User.findById(req.user);
     if (!userFound) {
       throw new Error("User not found");
@@ -24,9 +22,7 @@ const postController = {
       author: req.user,
       category,
     });
-    //push the post into category
     categoryFound.posts.push(categoryFound?._id);
-    //resave the category
     await categoryFound.save();
 
     userFound.posts.push(postCreated?._id);
@@ -38,10 +34,10 @@ const postController = {
     });
   }),
 
-  //!list all posts
+  
   fetchAllPosts: asyncHandler(async (req, res) => {
     const { category, title, page = 1, limit = 300 } = req.query;
-    //Basic filter
+   
     let filter = {};
     if (category) {
       filter.category = category;
@@ -66,40 +62,49 @@ const postController = {
       totalPages: Math.ceil(totalPosts / limit),
     });
   }),
-  //! get a post
+  
   getPost: asyncHandler(async (req, res) => {
     //get the post id from params
     const postId = req.params.postId;
+
+    const userId = req.user ? req.user : null;
     //find the post
     const postFound = await Post.findById(postId);
+    if(!postFound){
+        throw new Error("Post not found");
+    }
+    if (userId) {
+      if(!postFound?.viewers.includes(userId)){
+        postFound.viewers.push(userId);
+        postFound.viewsCount = postFound.viewsCount + 1;
+        await postFound.save();
+      }
+    }
     res.json({
       status: "success",
       message: "Post fetched successfully",
       postFound,
     });
   }),
-  //! delete
+  
   delete: asyncHandler(async (req, res) => {
-    //get the post id from params
     const postId = req.params.postId;
-    //find the post
     await Post.findByIdAndDelete(postId);
     res.json({
       status: "success",
       message: "Post deleted successfully",
     });
   }),
-  //! pdate post
+  
   update: asyncHandler(async (req, res) => {
-    //get the post id from params
     const postId = req.params.postId;
     //find the post
     const postFound = await Post.findById(postId);
     if (!postFound) {
       throw new Error("Post  not found");
     }
-    //update
-    const postUpdted = await Post.findByIdAndUpdate(
+    
+    const postUpdated = await Post.findByIdAndUpdate(
       postId,
       { title: req.body.title, description: req.body.description },
       {
@@ -108,9 +113,53 @@ const postController = {
     );
     res.json({
       status: "Post updated successfully",
-      postUpdted,
+      postUpdated,
     });
   }),
+
+  like: asyncHandler(async (req, res) => {
+      const postId = req.params.postId;
+      const userId = req.user;
+      const post = await Post.findById(postId);
+
+      if(post?.dislikes.includes(userId)){
+        post.dislikes.pull(userId);
+      }
+
+      if(post?.likes.includes(userId)){
+        post?.likes?.pull(userId);
+      } else {
+        post?.likes?.push(userId);
+      }
+
+      await post.save();
+
+      res.json({
+        message: "Post liked",
+      });
+  }),
+
+  dislike: asyncHandler(async (req, res) => {
+    const postId = req.params.postId;
+      const userId = req.user;
+      const post = await Post.findById(postId);
+
+      if(post?.likes.includes(userId)){
+        post.likes.pull(userId);
+      }
+
+      if(post?.dislikes.includes(userId)){
+        post?.dislikes?.pull(userId);
+      } else {
+        post?.dislikes?.push(userId);
+      }
+
+      await post.save();
+
+      res.json({
+        message: "Post disliked",
+      });
+    })
 };
 
 module.exports = postController;

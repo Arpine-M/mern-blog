@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const Post = require("../../models/Post/Post");
 const Category = require("../../models/Category/Category");
 const User = require("../../models/User/User");
+const sendNotificationMsg = require("../../utils/sendNotificationMsg");
 
 const postController = {
   
@@ -27,6 +28,19 @@ const postController = {
 
     userFound.posts.push(postCreated?._id);
     await userFound.save();
+
+    await Notification.create({
+      userId: req.user,
+      postId: postCreated?._id,
+      message:`New post created by ${userFound?.username}`,
+    });
+
+    userFound.followers.forEach(async(follower)=>{
+        const users = await User.find({_id:follower});
+        users.forEach(async(user)=>{
+            await sendNotificationMsg(user.email, postCreated?._id);
+        })
+    })
     res.json({
       status: "success",
       message: "Post created successfully",
@@ -69,16 +83,25 @@ const postController = {
 
     const userId = req.user ? req.user : null;
     //find the post
-    const postFound = await Post.findById(postId);
+    const postFound = await Post.findById(postId).populate({
+      path: "comments",
+      populate: {
+        path: "author",
+      }
+    });
     if(!postFound){
         throw new Error("Post not found");
     }
     if (userId) {
-      if(!postFound?.viewers.includes(userId)){
-        postFound.viewers.push(userId);
-        postFound.viewsCount = postFound.viewsCount + 1;
-        await postFound.save();
-      }
+
+      await Post.findByIdAndUpdate(postId, { 
+        $addToSet: { viewers: userId }, 
+    }, { new: true });
+      // if(!postFound?.viewers.includes(userId)){
+      //   postFound.viewers.push(userId);
+      //   postFound.viewsCount = postFound.viewsCount + 1;
+      //   await postFound.save();
+      // }
     }
     res.json({
       status: "success",

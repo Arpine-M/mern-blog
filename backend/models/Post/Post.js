@@ -20,6 +20,7 @@ const postSchema = new mongoose.Schema(
     },
     thisMonthEarnings: { type: Number, default: 0 },
     totalEarnings: { type: Number, default: 0 },
+    lastCalculatedViewsCount: { type: Number, default: 0 },
     category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
     viewsCount: { type: Number, default: 0 },
     // Interactions

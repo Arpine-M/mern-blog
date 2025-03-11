@@ -28,6 +28,12 @@ import AccountVerifiedComponent from "./components/User/AccountVerification";
 import RequestResetPassword from "./components/User/RequestResetPassword";
 import ResetPassword from "./components/User/ResetPassword";
 import Rankings from "./components/User/CreatorsRanking";
+import MyFollowing from "./components/User/MyFollowing";
+import MyFollowers from "./components/User/MyFollowers";
+import MyEarnings from "./components/User/MyEarnings";
+import DashboardPosts from "./components/User/DashboardPosts";
+import Settings from "./components/User/SettingsPage";
+
 function App() {
   const {isError, isLoading, data, error, isSuccess, refetch} = useQuery({
     queryKey:["user-auth"],
@@ -67,6 +73,33 @@ function App() {
             }
             path="create-post"
           />
+           {/* my posts */}
+           <Route
+            element={
+              <AuthRoute>
+                <DashboardPosts />
+              </AuthRoute>
+            }
+            path="posts"
+          />
+          {/* update post */}
+          <Route
+            element={
+              <AuthRoute>
+                <UpdatePost />
+              </AuthRoute>
+            }
+            path="update-post/:postId"
+          />
+            {/* settings page */}
+            <Route
+            element={
+              <AuthRoute>
+                <Settings />
+              </AuthRoute>
+            }
+            path="settings"
+          />
           {/* Verify account */}
           <Route
             element={
@@ -84,6 +117,33 @@ function App() {
               </AuthRoute>
             }
             path="create-plan"
+          />
+          {/* my followings */}
+            <Route
+            element={
+              <AuthRoute>
+                <MyFollowing />
+              </AuthRoute>
+            }
+            path="my-followings"
+          />
+          {/* my followers */}
+          <Route
+            element={
+              <AuthRoute>
+                <MyFollowers />
+              </AuthRoute>
+            }
+            path="my-followings"
+          />
+          {/* my earnings */}
+          <Route
+            element={
+              <AuthRoute>
+                <MyEarnings />
+              </AuthRoute>
+            }
+            path="my-earnings"
           />
           {/* Create category */}
           <Route

@@ -9,6 +9,7 @@ import PostCategory from "../Category/PostCategory";
 import { fetchCategoriesAPI } from "../../APIServices/category/categoryAPI";
 import { FaSearch } from "react-icons/fa";
 import { MdClear } from "react-icons/md";
+import truncateString from "../../utils/truncateString";
 const PostsList = () => {
   //filtering state
   const [filters, setFilters] = useState({});
@@ -147,7 +148,7 @@ const PostsList = () => {
                     <div
                       className="rendered-html-content mb-2"
                       dangerouslySetInnerHTML={{
-                        __html: post?.description,
+                        __html: truncateString (post?.description, 200)
                       }}
                     />
                     <div className="flex flex-wrap items-center gap-3">

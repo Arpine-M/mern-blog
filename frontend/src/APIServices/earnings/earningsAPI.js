@@ -9,5 +9,12 @@ export const fetchAllEarningsAPI = async() => {
     return posts.data;
 }
 
+export const getMyEarningsAPI = async() => {
+    const posts = await axios.get(`${BASE_URL}/my-earnings`, {
+        withCredentials: true
+    });
+    return posts.data;
+}
+
 
 

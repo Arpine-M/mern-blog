@@ -43,14 +43,25 @@ const earningsController = {
                 res.json({
                     status: "success",
                     message: "Earnings fetched successfully",
-                    categories,
+                    earnings,
                 });
     }),
+
+      getUserEarnings: asyncHandler(async (req, res) => {
+      const earnings = await Earnings.find({ user: req.user }).populate({
+      path: "post",
+      populate: {
+        path: "author",
+      },
+    });
+    res.json(earnings);
+  }),
+};
    
     
     
       
-}
+
 
 
 module.exports = earningsController

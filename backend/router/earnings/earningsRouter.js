@@ -6,6 +6,7 @@ const earningsController = require("../../controllers/earnings/earningsControlle
 
 
 earningsRouter.get('/', earningsController.fetchAllEarnings);
+earningsRouter.get('/my-earnings', isAuthenticated, earningsController.getUserEarnings);
 
 
 

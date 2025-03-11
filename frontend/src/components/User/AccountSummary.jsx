@@ -12,6 +12,7 @@ import { sendEmailVerificationTokenAPI, userProfileAPI } from "../../APIServices
 import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
 import AlertMessage from "../Alert/AlertMessage"
+import { useMutation } from "@tanstack/react-query";
 
 const AccountSummaryDashboard = ({}) => {
   const {data, isLoading, isError, error} = useQuery({

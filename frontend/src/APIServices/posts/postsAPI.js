@@ -15,7 +15,6 @@ export const updatePostAPI = async (postData) => {
   const response = await axios.put(
     `${BASE_URL}/${postData?.postId}`,
     {
-      title: postData.title,
       description: postData.description,
     },
     {

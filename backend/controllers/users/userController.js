@@ -114,14 +114,18 @@ const userController = {
     } catch (error) {}
     return res.status(401).json({ isAuthenticated: false, error });
   }),
-  // ! Logout
+  
   logout: asyncHandler(async (req, res) => {
     res.cookie("token", "", { maxAge: 1 });
     res.status(200).json({ message: "Logout success" });
   }),
 
   profile: asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user).populate("posts").select("-password -passwordResetToken -passwordResetExpires -accountVerificationToken -accountVerificationExpires");
+    const user = await User.findById(req.user)
+    .populate("following")
+    .populate("followers")
+    .populate("posts")
+    .select("-password -passwordResetToken -passwordResetExpires -accountVerificationToken -accountVerificationExpires");
     res.json({user});
   }),
 
@@ -266,6 +270,19 @@ const userController = {
       message: "Password successfully reset",
     
     })
+  }),
+
+  updateEmail: asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    const user = await User.findById(req.user);
+    user.email = email;
+    user.isEmailVerified = false;
+    await user.save();
+    const token = await user.generateAccVerificationToken();
+    sendAccVerificationEmail(user?.email, token);
+    res.json({
+      message: `Account verification email sent to ${user?.email} token expires in 10 minutes`,
+    });
   }),
 
 };

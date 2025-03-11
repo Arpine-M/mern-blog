@@ -15,7 +15,7 @@ postRouter.post("/posts/create", isAuthenticated, checkUserPlan, isAccountVerifi
 postRouter.get('/posts', postController.fetchAllPosts);
 
 
-postRouter.put('/posts/:postId', isAuthenticated, postController.update);
+postRouter.put('/posts/:postId',  isAuthenticated, upload.single("image"), postController.update);
 
 
 postRouter.get('/posts/:postId', optionalAuth, postController.getPost);
